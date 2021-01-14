@@ -34,7 +34,7 @@ class ExactGaussianInference(LatentFunctionInference):
         input_dict["class"] = "GPy.inference.latent_function_inference.exact_gaussian_inference.ExactGaussianInference"
         return input_dict
 
-    def inference(self, kern, X, likelihood, Y, mean_function=None, Y_metadata=None, K=None, variance=None, Z_tilde=None):
+    def inference(self, kern, X, likelihood, Y, mean_function=None, Y_metadata=None, K=None, variance=None, Z_tilde=None, A = None):
         """
         Returns a Posterior class containing essential quantities of the posterior
         """
@@ -51,6 +51,9 @@ class ExactGaussianInference(LatentFunctionInference):
 
         if K is None:
             K = kern.K(X)
+            if A is None:
+                A = np.identity(K.shape[0])
+            K = A.dot(K).dot(A^T)
 
         Ky = K.copy()
         diag.add(Ky, variance+1e-8)
